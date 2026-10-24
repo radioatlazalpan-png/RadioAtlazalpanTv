@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-950 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Radio Atlazalpan TV — Transmisión en Vivo</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- HLS.js Library -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            display: ['Outfit', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background: radial-gradient(circle at 50% 10%, #1e1b4b 0%, #090911 60%, #030308 100%);
+      background-attachment: fixed;
+    }
+    .bg-grid-pattern {
+      background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+    .glass-panel {
+      background: rgba(18, 18, 38, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .player-neon-border {
+      border: 2px solid rgba(236, 72, 153, 0.8);
+      box-shadow: 0 0 25px rgba(236, 72, 153, 0.4), inset 0 0 15px rgba(59, 130, 246, 0.2);
+    }
+    @keyframes marquee {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+    .animate-marquee {
+      display: inline-block;
+      white-space: nowrap;
+      animation: marquee 22s linear infinite;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between font-sans antialiased text-slate-100 bg-grid-pattern selection:bg-pink-500 selection:text-white">
+
+  <!-- HEADER -->
+  <header class="w-full glass-panel sticky top-0 z-40 border-b border-white/10">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="relative group">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-pink-500 via-purple-600 to-cyan-500 p-0.5 shadow-lg shadow-pink-500/20">
+            <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center overflow-hidden">
+              <i class="fa-solid fa-tower-broadcast text-pink-500 text-xl"></i>
+            </div>
+          </div>
+          <span class="absolute -bottom-1 -right-1 flex h-3 w-3">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-pink-500"></span>
+          </span>
+        </div>
+        <div>
+          <h1 class="font-display font-extrabold text-xl md:text-2xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-100 to-pink-300">
+            RADIO ATLAZALPAN <span class="text-pink-500 font-black">TV</span>
+          </h1>
+          <p class="text-xs text-cyan-400 font-medium tracking-wider flex items-center gap-1.5">
+            <i class="fa-solid fa-signal text-xs text-pink-400"></i>
+            <span>Radical en Vivo</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MARQUEE -->
+  <div class="w-full bg-gradient-to-r from-purple-950/90 via-slate-900/90 to-purple-950/90 border-b border-pink-500/20 py-2 overflow-hidden">
+    <div class="max-w-6xl mx-auto px-4 flex items-center text-xs md:text-sm">
+      <span class="bg-pink-600 text-white font-bold px-2.5 py-0.5 rounded text-[10px] uppercase tracking-wider shrink-0 mr-3 shadow-md">
+        RADICAL EN VIVO
+      </span>
+      <div class="overflow-hidden whitespace-nowrap text-slate-300 font-medium w-full">
+        <div class="animate-marquee">
+          🔴 Transmisión oficial en vivo 24/7 con la mejor señal y entretenimiento | 💬 Envía tus saludos y mensajes por WhatsApp | 📺 Disfrútanos también en nuestra app oficial para Roku TV
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <main class="max-w-5xl mx-auto px-4 py-6 md:py-8 w-full flex-grow flex flex-col items-center justify-center">
+    
+    <!-- SELECTOR DE SEÑAL WEB -->
+    <div class="w-full flex flex-col sm:flex-row items-center justify-between mb-3 gap-3">
+      <div class="flex items-center gap-2.5">
+        <span class="relative flex h-3.5 w-3.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-red-600"></span>
+        </span>
+        <span class="font-display font-bold text-sm md:text-base text-red-500 tracking-wide uppercase" id="currentModeLabel">
+          Modo: En Vivo (OBS)
+        </span>
+      </div>
+
+      <div class="flex items-center gap-2 bg-slate-900/80 p-1.5 rounded-2xl border border-white/10">
+        <button onclick="switchStream('obs')" id="btnObs" class="px-4 py-1.5 rounded-xl text-xs font-bold transition-all bg-pink-600 text-white shadow-lg shadow-pink-600/30">
+          <i class="fa-solid fa-video mr-1"></i> En Vivo (OBS)
+        </button>
+        <button onclick="switchStream('247')" id="btn247" class="px-4 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white">
+          <i class="fa-solid fa-clapperboard mr-1"></i> Programación 24/7
+        </button>
+      </div>
+    </div>
+
+    <!-- PLAYER -->
+    <div class="relative w-full aspect-video rounded-2xl overflow-hidden player-neon-border bg-black shadow-2xl group">
+      <video id="webVideoPlayer" class="w-full h-full object-contain bg-black" playsinline controls autoplay></video>
+
+      <div class="absolute top-3 left-3 md:top-5 md:left-5 z-20 pointer-events-none">
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-950/80 backdrop-blur-md border border-white/10 shadow-lg">
+          <div class="w-6 h-6 rounded-lg bg-pink-600 flex items-center justify-center text-white text-xs font-black">AT</div>
+          <span class="font-display font-extrabold text-xs md:text-sm text-white tracking-wider">ATLAZALPAN <span class="text-pink-500">TV</span></span>
+        </div>
+      </div>
+
+      <div class="absolute top-3 right-3 md:top-5 md:right-5 z-20 pointer-events-none">
+        <span class="px-2.5 py-1 rounded-md bg-red-600/90 text-white font-extrabold text-[10px] md:text-xs tracking-wider uppercase shadow-lg flex items-center gap-1.5">
+          <i class="fa-solid fa-circle text-[8px] animate-pulse"></i> ROKU & WEB
+        </span>
+      </div>
+
+      <!-- OVERLAY DE INICIO -->
+      <div id="playerOverlay" class="absolute inset-0 bg-slate-950/95 backdrop-blur-sm z-30 flex flex-col items-center justify-center p-6 text-center">
+        <div onclick="forcePlay()" class="w-20 h-20 rounded-full bg-gradient-to-tr from-pink-600 to-purple-600 text-white flex items-center justify-center text-3xl mb-4 shadow-xl shadow-pink-600/40 cursor-pointer hover:scale-110 transition-transform">
+          <i class="fa-solid fa-play ml-1"></i>
+        </div>
+        <h3 class="font-display font-bold text-lg md:text-xl text-white mb-1">Radio Atlazalpan TV</h3>
+        <p class="text-xs md:text-sm text-slate-300 max-w-md mb-4">Haz clic para iniciar la señal en tu navegador.</p>
+        <button onclick="forcePlay()" class="px-6 py-3 rounded-xl bg-pink-600 hover:bg-pink-500 text-white font-bold text-sm shadow-lg shadow-pink-600/30 transition-all">
+          Iniciar Reproducción
+        </button>
+      </div>
+    </div>
+
+    <!-- BUTTONS -->
+    <div class="w-full mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <button id="openInfoBtn" class="w-full py-3.5 px-6 rounded-2xl glass-panel hover:bg-white/10 border border-white/10 text-white font-display font-bold text-base flex items-center justify-center gap-3 shadow-xl">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-pink-500 to-purple-600 flex items-center justify-center text-white"><i class="fa-solid fa-circle-info text-sm"></i></div>
+        <span>Información del Canal</span>
+      </button>
+
+      <button id="openShoutoutBtn" class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 text-white font-display font-bold text-base flex items-center justify-center gap-3 shadow-lg shadow-purple-600/30">
+        <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center text-white"><i class="fa-solid fa-paper-plane text-sm"></i></div>
+        <span>Enviar Saludo en Vivo</span>
+      </button>
+    </div>
+
+    <!-- CHAT EN VIVO -->
+    <div class="w-full mt-6 glass-panel rounded-2xl p-5 border border-white/10 shadow-xl">
+      <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-3">
+        <h3 class="font-display font-bold text-sm md:text-base text-slate-200 flex items-center gap-2">
+          <i class="fa-solid fa-comments text-pink-500"></i>
+          <span>Comentarios y Saludos en Directo</span>
+        </h3>
+        <span id="chatStatusBadge" class="text-xs px-3 py-1 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-800/60 font-semibold animate-pulse">
+          ● Chat Activo
+        </span>
+      </div>
+
+      <div id="chatBox" class="h-40 overflow-y-auto space-y-2.5 mb-4 pr-2 text-sm bg-slate-950/60 p-3.5 rounded-xl border border-white/5">
+        <div class="text-slate-400 text-center italic py-10 text-xs md:text-sm" id="chatPlaceholder">
+          ¡Escribe tu saludo y aparecerá aquí en pantalla!
+        </div>
+      </div>
+
+      <form id="chatForm" onsubmit="sendComment(event)" class="flex gap-2.5">
+        <input type="text" id="userName" placeholder="Tu nombre..." required class="w-1/3 px-3.5 py-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs md:text-sm focus:outline-none focus:border-pink-500">
+        <input type="text" id="userMessage" placeholder="Escribe tu saludo..." required class="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs md:text-sm focus:outline-none focus:border-pink-500">
+        <button type="submit" id="sendBtn" class="px-5 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs md:text-sm font-bold flex items-center justify-center">
+          <i class="fa-solid fa-paper-plane"></i>
+        </button>
+      </form>
+    </div>
+
+    <!-- REDES SOCIALES -->
+    <div class="w-full mt-6 glass-panel rounded-2xl p-5 border border-white/10">
+      <h3 class="font-display font-bold text-sm md:text-base text-slate-300 mb-4 flex items-center gap-2">
+        <i class="fa-solid fa-share-nodes text-pink-500"></i>
+        <span>REDES OFICIALES Y CONTACTO DIRECTO</span>
+      </h3>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <a href="https://wa.me/5215568815049" target="_blank" rel="noopener noreferrer" class="glass-card hover:bg-emerald-500/10 p-3.5 rounded-xl border border-white/5 flex flex-col items-center text-center group">
+          <i class="fa-brands fa-whatsapp text-2xl text-emerald-400 mb-1"></i>
+          <span class="text-xs font-bold text-white">WhatsApp</span>
+          <span class="text-[10px] text-slate-400">55 6881 5049</span>
+        </a>
+        <a href="https://www.facebook.com/share/1cvHXXsydu/" target="_blank" rel="noopener noreferrer" class="glass-card hover:bg-blue-500/10 p-3.5 rounded-xl border border-white/5 flex flex-col items-center text-center group">
+          <i class="fa-brands fa-facebook text-2xl text-blue-400 mb-1"></i>
+          <span class="text-xs font-bold text-white">Facebook</span>
+          <span class="text-[10px] text-slate-400">Página Oficial</span>
+        </a>
+        <a href="https://www.tiktok.com/@radioatlazalpan?_r=1&_t=ZS-9Aof7XDT1CK" target="_blank" rel="noopener noreferrer" class="glass-card hover:bg-pink-500/10 p-3.5 rounded-xl border border-white/5 flex flex-col items-center text-center group">
+          <i class="fa-brands fa-tiktok text-2xl text-pink-400 mb-1"></i>
+          <span class="text-xs font-bold text-white">TikTok</span>
+          <span class="text-[10px] text-slate-400">@radioatlazalpan</span>
+        </a>
+        <a href="https://youtube.com/@radioatlazalpantv?si=SoAfxL6MASrnh7-I" target="_blank" rel="noopener noreferrer" class="glass-card hover:bg-red-500/10 p-3.5 rounded-xl border border-white/5 flex flex-col items-center text-center group">
+          <i class="fa-brands fa-youtube text-2xl text-red-400 mb-1"></i>
+          <span class="text-xs font-bold text-white">YouTube</span>
+          <span class="text-[10px] text-slate-400">Radio Atlazalpan TV</span>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODALS -->
+  <div id="infoModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="glass-panel w-full max-w-lg rounded-3xl p-6 border border-white/10 shadow-2xl relative">
+      <button id="closeInfoBtn" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-slate-300 flex items-center justify-center"><i class="fa-solid fa-xmark text-lg"></i></button>
+      <h2 class="font-display font-extrabold text-xl text-white mb-2">Radio Atlazalpan TV</h2>
+      <p class="text-xs text-slate-300 mb-4">Transmisión oficial en vivo 24/7 para web y Roku.</p>
+      <button id="closeInfoBtn2" class="w-full py-3 rounded-xl bg-white/10 text-white font-bold text-sm">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- SCRIPT -->
+  <script>
+    const URL_OBS = "https://frosty-fire-a1c1.radioatlazalpan.workers.dev/live/index.m3u8";
+    
+    const playlist = [
+      { title: "Radical en Vivo", url: "https://ia801507.us.archive.org/33/items/videoplayback_20260908/videoplayback.mp4", duration: 5840 },
+      { title: "Comercial Papelería", url: "https://ia903101.us.archive.org/31/items/pape_20260909/pape.ia.mp4", duration: 8 },
+      { title: "Comercial Redes", url: "https://ia601500.us.archive.org/27/items/redes_202609/redes.mp4", duration: 33 },
+      { title: "Comercial Regalos", url: "https://ia800504.us.archive.org/15/items/regalos_202609/regalos.mp4", duration: 61 },
+      { title: "Radical en Vivo", url: "https://ia803100.us.archive.org/29/items/videoplayback-3_20260908/videoplayback%20%283%29.mp4", duration: 7486 },
+      { title: "Comercial Aplicación", url: "https://ia600402.us.archive.org/0/items/aplicacion_202609/aplicacion%20.mp4", duration: 26 },
+      { title: "Comercial Lion", url: "https://ia801801.us.archive.org/9/items/lion_20260909/lion.mp4", duration: 132 },
+      { title: "Comercial Muni", url: "https://ia800402.us.archive.org/27/items/muni_20260909/muni.mp4", duration: 7 },
+      { title: "Radical en Vivo", url: "https://ia600400.us.archive.org/34/items/videoplayback-2_20260908_0540/videoplayback%20%282%29.mp4", duration: 11099 },
+      { title: "Comercial Hig", url: "https://ia801801.us.archive.org/4/items/hig_20260909/hig.mp4", duration: 8 },
+      { title: "Comercial Tamales", url: "https://ia800708.us.archive.org/15/items/tamales_202609/tamales.mp4", duration: 5 },
+      { title: "Comercial Redes", url: "https://ia801500.us.archive.org/27/items/redes_202609/redes.mp4", duration: 33 },
+      { title: "Radical en Vivo", url: "https://ia801907.us.archive.org/10/items/videoplayback-1_20260908/videoplayback%20%281%29.mp4", duration: 7430 },
+      { title: "Comercial Recargas", url: "https://ia800504.us.archive.org/12/items/recarga-telefonicas/recarga%20telefonicas.ia.mp4", duration: 25 },
+      { title: "Comercial Redes", url: "https://ia601500.us.archive.org/27/items/redes_202609/redes.mp4", duration: 33 },
+      { title: "Comercial Regalos IA", url: "https://ia600504.us.archive.org/15/items/regalos_202609/regalos.ia.mp4", duration: 61 },
+      { title: "Programa 5:00 PM", url: "https://ia600809.us.archive.org/5/items/5_20260910/5.mp4", duration: 4651 },
+      { title: "Programa Bole", url: "https://ia801400.us.archive.org/30/items/bole_20260909/bole.mp4", duration: 177 },
+      { title: "Programa Gym", url: "https://ia903207.us.archive.org/35/items/gym_20260909/gym.mp4", duration: 554 },
+      { title: "Programa Pelu", url: "https://ia801605.us.archive.org/29/items/pelu_20260909/pelu.ia.mp4", duration: 255 },
+      { title: "Programa Reproducidos", url: "https://ia800709.us.archive.org/33/items/Reproducidos/reproducidos%20.mp4", duration: 132 },
+      { title: "Podcast No", url: "https://ia600603.us.archive.org/26/items/no_20260909/no.mp4", duration: 595 },
+      { title: "Comercial Comer", url: "https://ia600909.us.archive.org/15/items/comer_202609/comer.ia.mp4", duration: 5 },
+      { title: "Comercial Regalos IA", url: "https://ia600504.us.archive.org/15/items/regalos_202609/regalos.ia.mp4", duration: 61 },
+      { title: "Comercial Hig", url: "https://ia801801.us.archive.org/4/items/hig_20260909/hig.mp4", duration: 8 },
+      { title: "Podcast Lati", url: "https://ia600708.us.archive.org/28/items/lati_20260909/lati.mp4", duration: 1315 },
+      { title: "Comercial Comer", url: "https://ia600909.us.archive.org/15/items/comer_202609/comer.ia.mp4", duration: 5 },
+      { title: "Comercial Muni", url: "https://ia800402.us.archive.org/27/items/muni_20260909/muni.mp4", duration: 7 },
+      { title: "Comercial Redes", url: "https://ia601500.us.archive.org/27/items/redes_202609/redes.mp4", duration: 33 },
+      { title: "Podcast Ganci", url: "https://ia801907.us.archive.org/14/items/ganci/ganci.mp4", duration: 915 },
+      { title: "Comercial Comer", url: "https://ia600909.us.archive.org/15/items/comer_202609/comer.ia.mp4", duration: 5 },
+      { title: "Comercial Aplicación", url: "https://ia600402.us.archive.org/0/items/aplicacion_202609/aplicacion%20.mp4", duration: 26 },
+      { title: "Comercial Regalos", url: "https://ia800504.us.archive.org/15/items/regalos_202609/regalos.mp4", duration: 61 },
+      { title: "Podcast Egar", url: "https://ia600509.us.archive.org/0/items/egar_20260909/egar.mp4", duration: 3271 },
+      { title: "Comercial Comer", url: "https://ia600909.us.archive.org/15/items/comer_202609/comer.ia.mp4", duration: 5 },
+      { title: "Comercial Sin", url: "https://ia801601.us.archive.org/17/items/sin_20260909/SIN.ia.mp4", duration: 30 },
+      { title: "Comercial Aplicación", url: "https://ia600402.us.archive.org/0/items/aplicacion_202609/aplicacion%20.mp4", duration: 26 },
+      { title: "Podcast Dem", url: "https://ia800605.us.archive.org/22/items/dem_20260909/dem.mp4", duration: 940 },
+      { title: "Cierre 1:00 AM", url: "https://ia800709.us.archive.org/33/items/Reproducidos/reproducidos%20.mp4", duration: 132 }
+    ];
+
+    const totalPlaylistDuration = playlist.reduce((acc, item) => acc + item.duration, 0);
+    const video = document.getElementById('webVideoPlayer');
+    const playerOverlay = document.getElementById('playerOverlay');
+    
+    let currentMode = 'obs';
+    let hlsInstance = null;
+
+    function getMexicoTime() {
+      const now = new Date();
+      const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+      return new Date(utc - (3600000 * 6));
+    }
+
+    function getInitial247State() {
+      const mexicoTime = getMexicoTime();
+      let currentTotalSeconds = (mexicoTime.getHours() * 3600) + (mexicoTime.getMinutes() * 60) + mexicoTime.getSeconds();
+      let scheduleStartSeconds = 3600; 
+      let secondsSinceScheduleStart = currentTotalSeconds - scheduleStartSeconds;
+      if (secondsSinceScheduleStart < 0) secondsSinceScheduleStart += 86400;
+
+      let elapsedInPlaylist = secondsSinceScheduleStart % totalPlaylistDuration;
+      let accumulated = 0;
+
+      for (let i = 0; i < playlist.length; i++) {
+        if (elapsedInPlaylist < accumulated + playlist[i].duration) {
+          return { index: i, offset: elapsedInPlaylist - accumulated };
+        }
+        accumulated += playlist[i].duration;
+      }
+      return { index: 0, offset: 0 };
+    }
+
+    let currentIndex = 0;
+
+    function switchStream(type) {
+      currentMode = type;
+      const btnObs = document.getElementById('btnObs');
+      const btn247 = document.getElementById('btn247');
+      const modeLabel = document.getElementById('currentModeLabel');
+
+      if (type === 'obs') {
+        btnObs.className = "px-4 py-1.5 rounded-xl text-xs font-bold transition-all bg-pink-600 text-white shadow-lg shadow-pink-600/30";
+        btn247.className = "px-4 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white";
+        modeLabel.textContent = "Modo: En Vivo (OBS)";
+        loadObsStream();
+      } else {
+        btn247.className = "px-4 py-1.5 rounded-xl text-xs font-bold transition-all bg-purple-600 text-white shadow-lg shadow-purple-600/30";
+        btnObs.className = "px-4 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white";
+        modeLabel.textContent = "Modo: Programación 24/7";
+        load247Stream();
+      }
+    }
+
+    function loadObsStream() {
+      playerOverlay.classList.remove('opacity-0', 'pointer-events-none');
+
+      if (Hls.isSupported()) {
+        if (hlsInstance) hlsInstance.destroy();
+        hlsInstance = new Hls({ enableWorker: true, lowLatencyMode: true });
+        hlsInstance.loadSource(URL_OBS);
+        hlsInstance.attachMedia(video);
+      } else {
+        video.src = URL_OBS;
+      }
+    }
+
+    function load247Stream() {
+      const state = getInitial247State();
+      currentIndex = state.index;
+      play247Video(currentIndex, state.offset);
+    }
+
+    function play247Video(index, seekTo = 0) {
+      if (index >= playlist.length) index = 0;
+      currentIndex = index;
+      const videoItem = playlist[currentIndex];
+      
+      video.removeAttribute('src');
+      if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
+      
+      video.src = videoItem.url;
+      video.load();
+
+      video.onloadedmetadata = () => {
+        if (seekTo > 0) {
+          video.currentTime = seekTo;
+          seekTo = 0;
+        } else {
+          video.currentTime = 0;
+        }
+        video.play().catch(() => {});
+      };
+
+      video.onended = () => {
+        if (currentMode === '247') {
+          play247Video(currentIndex + 1, 0);
+        }
+      };
+    }
+
+    function forcePlay() {
+      video.muted = false;
+      video.play().then(() => {
+        playerOverlay.classList.add('opacity-0', 'pointer-events-none');
+      }).catch(() => {
+        video.muted = true;
+        video.play();
+        playerOverlay.classList.add('opacity-0', 'pointer-events-none');
+      });
+    }
+
+    document.getElementById('openInfoBtn').addEventListener('click', () => document.getElementById('infoModal').classList.remove('hidden'));
+    document.getElementById('closeInfoBtn').addEventListener('click', () => document.getElementById('infoModal').classList.add('hidden'));
+    document.getElementById('closeInfoBtn2').addEventListener('click', () => document.getElementById('infoModal').classList.add('hidden'));
+
+    function sendComment(event) {
+      event.preventDefault();
+      const name = document.getElementById('userName').value.trim();
+      const message = document.getElementById('userMessage').value.trim();
+      if(name && message) {
+        const chatBox = document.getElementById('chatBox');
+        const bubble = document.createElement('div');
+        bubble.className = "p-2.5 rounded-xl bg-slate-900 border border-white/5 text-xs md:text-sm";
+        bubble.innerHTML = `<strong class="text-pink-400">${name}:</strong> <span class="text-slate-200">${message}</span>`;
+        chatBox.appendChild(bubble);
+        chatBox.scrollTop = chatBox.scrollHeight;
+        document.getElementById('userMessage').value = '';
+        const placeholder = document.getElementById('chatPlaceholder');
+        if(placeholder) placeholder.style.display = 'none';
+      }
+    }
+
+    window.onload = function() {
+      switchStream('obs');
+    };
+  </script>
+</body>
+</html>
